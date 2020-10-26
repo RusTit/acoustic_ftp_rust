@@ -1,14 +1,17 @@
 mod acoustic;
 mod env_vars;
 use acoustic::provider::AcousticProvider;
-use log::info;
+use log::{error, info};
 use std::error::Error;
 
 pub async fn run() -> Result<(), Box<dyn Error>> {
     let settings = env_vars::get_vars();
     let provider = AcousticProvider::new(&settings);
-    let token = provider.getAccessKey().await;
-    info!("Token: {:?}", token);
+    let token = provider.get_access_key().await;
+    match token {
+        Ok(token) => info!("Token: {:?}", token),
+        Err(e) => error!("Error getting token: {:?}", e),
+    }
 
     Ok(())
 }

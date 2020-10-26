@@ -1,5 +1,4 @@
 use acoustic_ftp_rust::run;
-use env_logger;
 use log::info;
 use std::error::Error;
 

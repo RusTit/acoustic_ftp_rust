@@ -1,7 +1,8 @@
+use crate::acoustic::models::AccessToken;
 use crate::env_vars::AppVars;
-use crate::acoustic::models::{AccessToken};
-use reqwest;
-use reqwest::{Error, StatusCode};
+use reqwest::StatusCode;
+use std::error::Error;
+use std::io::{Error as IoError, ErrorKind};
 
 pub struct AcousticProvider<'a> {
     settings: &'a AppVars,
@@ -12,7 +13,7 @@ impl<'a> AcousticProvider<'a> {
         Self { settings }
     }
 
-    pub async fn getAccessKey(&self) -> Result<(), Error> {
+    pub async fn get_access_key(&self) -> Result<AccessToken, Box<dyn Error>> {
         let url = format!("{}/oauth/token", self.settings.url_endpoint);
         let params = [
             ("grant_type", "refresh_token"),
@@ -27,13 +28,16 @@ impl<'a> AcousticProvider<'a> {
                 if r.status() == StatusCode::OK {
                     let data = r.json::<AccessToken>().await;
                     match data {
-                        Ok(d) => { d.access_token = ""; },
-                        Err(e) => {},
+                        Ok(mut d) => {
+                            d.recalc_expire_at();
+                            return Ok(d);
+                        }
+                        Err(e) => return Err(Box::new(e)),
                     }
                 }
-            },
-            Err(e) => return Err(e),
+            }
+            Err(e) => return Err(Box::new(e)),
         }
-        Ok(())
+        Err(Box::new(IoError::new(ErrorKind::Other, "Unknown")))
     }
 }
