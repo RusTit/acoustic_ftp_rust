@@ -1,4 +1,4 @@
-<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-0.3.1/src/net/udp/socket.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>socket.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../tokio/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><meta name="generator" content="rustdoc"><meta name="description" content="Source to the Rust file `/home/runner/.cargo/registry/src/github.com-1ecc6299db9ec823/tokio-0.2.22/src/net/udp/socket.rs`."><meta name="keywords" content="rust, rustlang, rust-lang"><title>socket.rs.html -- source</title><link rel="stylesheet" type="text/css" href="../../../../normalize.css"><link rel="stylesheet" type="text/css" href="../../../../rustdoc.css" id="mainThemeStyle"><link rel="stylesheet" type="text/css" href="../../../../light.css"  id="themeStyle"><link rel="stylesheet" type="text/css" href="../../../../dark.css" disabled ><link rel="stylesheet" type="text/css" href="../../../../ayu.css" disabled ><script src="../../../../storage.js"></script><noscript><link rel="stylesheet" href="../../../../noscript.css"></noscript><link rel="shortcut icon" href="../../../../favicon.ico"><style type="text/css">#crate-search{background-image:url("../../../../down-arrow.svg");}</style></head><body class="rustdoc source"><!--[if lte IE 8]><div class="warning">This old browser is unsupported and will most likely display funky things.</div><![endif]--><nav class="sidebar"><div class="sidebar-menu">&#9776;</div><a href='../../../../tokio/index.html'><div class='logo-container rust-logo'><img src='../../../../rust-logo.png' alt='logo'></div></a></nav><div class="theme-picker"><button id="theme-picker" aria-label="Pick another theme!"><img src="../../../../brush.svg" width="18" alt="Pick another theme!"></button><div id="theme-choices"></div></div><script src="../../../../theme.js"></script><nav class="sub"><form class="search-form"><div class="search-container"><div><select id="crate-search"><option value="All crates">All crates</option></select><input class="search-input" name="search" disabled autocomplete="off" spellcheck="false" placeholder="Click or press ‘S’ to search, ‘?’ for more options…" type="search"></div><span class="help-button">?</span>
                 <a id="settings-menu" href="../../../../settings.html"><img src="../../../../wheel.svg" width="18" alt="Change settings"></a></div></form></nav><section id="main" class="content"><pre class="line-numbers"><span id="1">  1</span>
 <span id="2">  2</span>
 <span id="3">  3</span>
@@ -424,298 +424,20 @@
 <span id="423">423</span>
 <span id="424">424</span>
 <span id="425">425</span>
-<span id="426">426</span>
-<span id="427">427</span>
-<span id="428">428</span>
-<span id="429">429</span>
-<span id="430">430</span>
-<span id="431">431</span>
-<span id="432">432</span>
-<span id="433">433</span>
-<span id="434">434</span>
-<span id="435">435</span>
-<span id="436">436</span>
-<span id="437">437</span>
-<span id="438">438</span>
-<span id="439">439</span>
-<span id="440">440</span>
-<span id="441">441</span>
-<span id="442">442</span>
-<span id="443">443</span>
-<span id="444">444</span>
-<span id="445">445</span>
-<span id="446">446</span>
-<span id="447">447</span>
-<span id="448">448</span>
-<span id="449">449</span>
-<span id="450">450</span>
-<span id="451">451</span>
-<span id="452">452</span>
-<span id="453">453</span>
-<span id="454">454</span>
-<span id="455">455</span>
-<span id="456">456</span>
-<span id="457">457</span>
-<span id="458">458</span>
-<span id="459">459</span>
-<span id="460">460</span>
-<span id="461">461</span>
-<span id="462">462</span>
-<span id="463">463</span>
-<span id="464">464</span>
-<span id="465">465</span>
-<span id="466">466</span>
-<span id="467">467</span>
-<span id="468">468</span>
-<span id="469">469</span>
-<span id="470">470</span>
-<span id="471">471</span>
-<span id="472">472</span>
-<span id="473">473</span>
-<span id="474">474</span>
-<span id="475">475</span>
-<span id="476">476</span>
-<span id="477">477</span>
-<span id="478">478</span>
-<span id="479">479</span>
-<span id="480">480</span>
-<span id="481">481</span>
-<span id="482">482</span>
-<span id="483">483</span>
-<span id="484">484</span>
-<span id="485">485</span>
-<span id="486">486</span>
-<span id="487">487</span>
-<span id="488">488</span>
-<span id="489">489</span>
-<span id="490">490</span>
-<span id="491">491</span>
-<span id="492">492</span>
-<span id="493">493</span>
-<span id="494">494</span>
-<span id="495">495</span>
-<span id="496">496</span>
-<span id="497">497</span>
-<span id="498">498</span>
-<span id="499">499</span>
-<span id="500">500</span>
-<span id="501">501</span>
-<span id="502">502</span>
-<span id="503">503</span>
-<span id="504">504</span>
-<span id="505">505</span>
-<span id="506">506</span>
-<span id="507">507</span>
-<span id="508">508</span>
-<span id="509">509</span>
-<span id="510">510</span>
-<span id="511">511</span>
-<span id="512">512</span>
-<span id="513">513</span>
-<span id="514">514</span>
-<span id="515">515</span>
-<span id="516">516</span>
-<span id="517">517</span>
-<span id="518">518</span>
-<span id="519">519</span>
-<span id="520">520</span>
-<span id="521">521</span>
-<span id="522">522</span>
-<span id="523">523</span>
-<span id="524">524</span>
-<span id="525">525</span>
-<span id="526">526</span>
-<span id="527">527</span>
-<span id="528">528</span>
-<span id="529">529</span>
-<span id="530">530</span>
-<span id="531">531</span>
-<span id="532">532</span>
-<span id="533">533</span>
-<span id="534">534</span>
-<span id="535">535</span>
-<span id="536">536</span>
-<span id="537">537</span>
-<span id="538">538</span>
-<span id="539">539</span>
-<span id="540">540</span>
-<span id="541">541</span>
-<span id="542">542</span>
-<span id="543">543</span>
-<span id="544">544</span>
-<span id="545">545</span>
-<span id="546">546</span>
-<span id="547">547</span>
-<span id="548">548</span>
-<span id="549">549</span>
-<span id="550">550</span>
-<span id="551">551</span>
-<span id="552">552</span>
-<span id="553">553</span>
-<span id="554">554</span>
-<span id="555">555</span>
-<span id="556">556</span>
-<span id="557">557</span>
-<span id="558">558</span>
-<span id="559">559</span>
-<span id="560">560</span>
-<span id="561">561</span>
-<span id="562">562</span>
-<span id="563">563</span>
-<span id="564">564</span>
-<span id="565">565</span>
-<span id="566">566</span>
-<span id="567">567</span>
-<span id="568">568</span>
-<span id="569">569</span>
-<span id="570">570</span>
-<span id="571">571</span>
-<span id="572">572</span>
-<span id="573">573</span>
-<span id="574">574</span>
-<span id="575">575</span>
-<span id="576">576</span>
-<span id="577">577</span>
-<span id="578">578</span>
-<span id="579">579</span>
-<span id="580">580</span>
-<span id="581">581</span>
-<span id="582">582</span>
-<span id="583">583</span>
-<span id="584">584</span>
-<span id="585">585</span>
-<span id="586">586</span>
-<span id="587">587</span>
-<span id="588">588</span>
-<span id="589">589</span>
-<span id="590">590</span>
-<span id="591">591</span>
-<span id="592">592</span>
-<span id="593">593</span>
-<span id="594">594</span>
-<span id="595">595</span>
-<span id="596">596</span>
-<span id="597">597</span>
-<span id="598">598</span>
-<span id="599">599</span>
-<span id="600">600</span>
-<span id="601">601</span>
-<span id="602">602</span>
-<span id="603">603</span>
-<span id="604">604</span>
-<span id="605">605</span>
-<span id="606">606</span>
-<span id="607">607</span>
-<span id="608">608</span>
-<span id="609">609</span>
 </pre><div class="example-wrap"><pre class="rust ">
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">future</span>::<span class="ident">poll_fn</span>;
 <span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">io</span>::<span class="ident">PollEvented</span>;
-<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">net</span>::{<span class="ident">to_socket_addrs</span>, <span class="ident">ToSocketAddrs</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">net</span>::<span class="ident">udp</span>::<span class="ident">split</span>::{<span class="ident">split</span>, <span class="ident">RecvHalf</span>, <span class="ident">SendHalf</span>};
+<span class="kw">use</span> <span class="kw">crate</span>::<span class="ident">net</span>::<span class="ident">ToSocketAddrs</span>;
 
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">convert</span>::<span class="ident">TryFrom</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">fmt</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">io</span>;
 <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">net</span>::{<span class="self">self</span>, <span class="ident">Ipv4Addr</span>, <span class="ident">Ipv6Addr</span>, <span class="ident">SocketAddr</span>};
+<span class="kw">use</span> <span class="ident">std</span>::<span class="ident">task</span>::{<span class="ident">Context</span>, <span class="ident">Poll</span>};
 
-<span class="macro">cfg_net</span><span class="macro">!</span> {
+<span class="macro">cfg_udp</span><span class="macro">!</span> {
     <span class="doccomment">/// A UDP socket</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// UDP is &quot;connectionless&quot;, unlike TCP. Meaning, regardless of what address you&#39;ve bound to, a `UdpSocket`</span>
-    <span class="doccomment">/// is free to communicate with many different remotes. In tokio there are basically two main ways to use `UdpSocket`:</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// * one to many: [`bind`](`UdpSocket::bind`) and use [`send_to`](`UdpSocket::send_to`)</span>
-    <span class="doccomment">///   and [`recv_from`](`UdpSocket::recv_from`) to communicate with many different addresses</span>
-    <span class="doccomment">/// * one to one: [`connect`](`UdpSocket::connect`) and associate with a single address, using [`send`](`UdpSocket::send`)</span>
-    <span class="doccomment">///   and [`recv`](`UdpSocket::recv`) to communicate only with that remote address</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// `UdpSocket` can also be used concurrently to `send_to` and `recv_from` in different tasks,</span>
-    <span class="doccomment">/// all that&#39;s required is that you `Arc&lt;UdpSocket&gt;` and clone a reference for each task.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Streams</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// If you need to listen over UDP and produce a [`Stream`](`crate::stream::Stream`), you can look</span>
-    <span class="doccomment">/// at [`UdpFramed`].</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// [`UdpFramed`]: https://docs.rs/tokio-util/latest/tokio_util/udp/struct.UdpFramed.html</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example: one to many (bind)</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Using `bind` we can create a simple echo server that sends and recv&#39;s with many different clients:</span>
-    <span class="doccomment">/// ```no_run</span>
-    <span class="doccomment">/// use tokio::net::UdpSocket;</span>
-    <span class="doccomment">/// use std::io;</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// #[tokio::main]</span>
-    <span class="doccomment">/// async fn main() -&gt; io::Result&lt;()&gt; {</span>
-    <span class="doccomment">///     let sock = UdpSocket::bind(&quot;0.0.0.0:8080&quot;).await?;</span>
-    <span class="doccomment">///     let mut buf = [0; 1024];</span>
-    <span class="doccomment">///     loop {</span>
-    <span class="doccomment">///         let (len, addr) = sock.recv_from(&amp;mut buf).await?;</span>
-    <span class="doccomment">///         println!(&quot;{:?} bytes received from {:?}&quot;, len, addr);</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">///         let len = sock.send_to(&amp;buf[..len], addr).await?;</span>
-    <span class="doccomment">///         println!(&quot;{:?} bytes sent&quot;, len);</span>
-    <span class="doccomment">///     }</span>
-    <span class="doccomment">/// }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example: one to one (connect)</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Or using `connect` we can echo with a single remote address using `send` and `recv`:</span>
-    <span class="doccomment">/// ```no_run</span>
-    <span class="doccomment">/// use tokio::net::UdpSocket;</span>
-    <span class="doccomment">/// use std::io;</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// #[tokio::main]</span>
-    <span class="doccomment">/// async fn main() -&gt; io::Result&lt;()&gt; {</span>
-    <span class="doccomment">///     let sock = UdpSocket::bind(&quot;0.0.0.0:8080&quot;).await?;</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">///     let remote_addr = &quot;127.0.0.1:59611&quot;;</span>
-    <span class="doccomment">///     sock.connect(remote_addr).await?;</span>
-    <span class="doccomment">///     let mut buf = [0; 1024];</span>
-    <span class="doccomment">///     loop {</span>
-    <span class="doccomment">///         let len = sock.recv(&amp;mut buf).await?;</span>
-    <span class="doccomment">///         println!(&quot;{:?} bytes received from {:?}&quot;, len, remote_addr);</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">///         let len = sock.send(&amp;buf[..len]).await?;</span>
-    <span class="doccomment">///         println!(&quot;{:?} bytes sent&quot;, len);</span>
-    <span class="doccomment">///     }</span>
-    <span class="doccomment">/// }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example: Sending/Receiving concurrently</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Because `send_to` and `recv_from` take `&amp;self`. It&#39;s perfectly alright to `Arc&lt;UdpSocket&gt;`</span>
-    <span class="doccomment">/// and share the references to multiple tasks, in order to send/receive concurrently. Here is</span>
-    <span class="doccomment">/// a similar &quot;echo&quot; example but that supports concurrent sending/receiving:</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```no_run</span>
-    <span class="doccomment">/// use tokio::{net::UdpSocket, sync::mpsc};</span>
-    <span class="doccomment">/// use std::{io, net::SocketAddr, sync::Arc};</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// #[tokio::main]</span>
-    <span class="doccomment">/// async fn main() -&gt; io::Result&lt;()&gt; {</span>
-    <span class="doccomment">///     let sock = UdpSocket::bind(&quot;0.0.0.0:8080&quot;.parse::&lt;SocketAddr&gt;().unwrap()).await?;</span>
-    <span class="doccomment">///     let r = Arc::new(sock);</span>
-    <span class="doccomment">///     let s = r.clone();</span>
-    <span class="doccomment">///     let (tx, mut rx) = mpsc::channel::&lt;(Vec&lt;u8&gt;, SocketAddr)&gt;(1_000);</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">///     tokio::spawn(async move {</span>
-    <span class="doccomment">///         while let Some((bytes, addr)) = rx.recv().await {</span>
-    <span class="doccomment">///             let len = s.send_to(&amp;bytes, &amp;addr).await.unwrap();</span>
-    <span class="doccomment">///             println!(&quot;{:?} bytes sent&quot;, len);</span>
-    <span class="doccomment">///         }</span>
-    <span class="doccomment">///     });</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">///     let mut buf = [0; 1024];</span>
-    <span class="doccomment">///     loop {</span>
-    <span class="doccomment">///         let (len, addr) = r.recv_from(&amp;mut buf).await?;</span>
-    <span class="doccomment">///         println!(&quot;{:?} bytes received from {:?}&quot;, len, addr);</span>
-    <span class="doccomment">///         tx.send((buf[..len].to_vec(), addr)).await.unwrap();</span>
-    <span class="doccomment">///     }</span>
-    <span class="doccomment">/// }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">///</span>
     <span class="kw">pub</span> <span class="kw">struct</span> <span class="ident">UdpSocket</span> {
         <span class="ident">io</span>: <span class="ident">PollEvented</span><span class="op">&lt;</span><span class="ident">mio</span>::<span class="ident">net</span>::<span class="ident">UdpSocket</span><span class="op">&gt;</span>,
     }
@@ -724,23 +446,8 @@
 <span class="kw">impl</span> <span class="ident">UdpSocket</span> {
     <span class="doccomment">/// This function will create a new UDP socket and attempt to bind it to</span>
     <span class="doccomment">/// the `addr` provided.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```no_run</span>
-    <span class="doccomment">/// use tokio::net::UdpSocket;</span>
-    <span class="doccomment">/// use std::io;</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// #[tokio::main]</span>
-    <span class="doccomment">/// async fn main() -&gt; io::Result&lt;()&gt; {</span>
-    <span class="doccomment">///     let sock = UdpSocket::bind(&quot;0.0.0.0:8080&quot;).await?;</span>
-    <span class="doccomment">///     // use `sock`</span>
-    <span class="doccomment">/// #   let _ = sock;</span>
-    <span class="doccomment">///     Ok(())</span>
-    <span class="doccomment">/// }</span>
-    <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">bind</span><span class="op">&lt;</span><span class="ident">A</span>: <span class="ident">ToSocketAddrs</span><span class="op">&gt;</span>(<span class="ident">addr</span>: <span class="ident">A</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">UdpSocket</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">addrs</span> <span class="op">=</span> <span class="ident">to_socket_addrs</span>(<span class="ident">addr</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">addrs</span> <span class="op">=</span> <span class="ident">addr</span>.<span class="ident">to_socket_addrs</span>().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_err</span> <span class="op">=</span> <span class="prelude-val">None</span>;
 
         <span class="kw">for</span> <span class="ident">addr</span> <span class="kw">in</span> <span class="ident">addrs</span> {
@@ -759,7 +466,7 @@
     }
 
     <span class="kw">fn</span> <span class="ident">bind_addr</span>(<span class="ident">addr</span>: <span class="ident">SocketAddr</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">UdpSocket</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">sys</span> <span class="op">=</span> <span class="ident">mio</span>::<span class="ident">net</span>::<span class="ident">UdpSocket</span>::<span class="ident">bind</span>(<span class="ident">addr</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">sys</span> <span class="op">=</span> <span class="ident">mio</span>::<span class="ident">net</span>::<span class="ident">UdpSocket</span>::<span class="ident">bind</span>(<span class="kw-2">&amp;</span><span class="ident">addr</span>)<span class="question-mark">?</span>;
         <span class="ident">UdpSocket</span>::<span class="ident">new</span>(<span class="ident">sys</span>)
     }
 
@@ -784,45 +491,21 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// The runtime is usually set implicitly when this function is called</span>
     <span class="doccomment">/// from a future driven by a tokio runtime, otherwise runtime can be set</span>
-    <span class="doccomment">/// explicitly with [`Runtime::enter`](crate::runtime::Runtime::enter) function.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```no_run</span>
-    <span class="doccomment">/// use tokio::net::UdpSocket;</span>
-    <span class="doccomment">/// # use std::{io, net::SocketAddr};</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # #[tokio::main]</span>
-    <span class="doccomment">/// # async fn main() -&gt; io::Result&lt;()&gt; {</span>
-    <span class="doccomment">/// let addr = &quot;0.0.0.0:8080&quot;.parse::&lt;SocketAddr&gt;().unwrap();</span>
-    <span class="doccomment">/// let std_sock = std::net::UdpSocket::bind(addr)?;</span>
-    <span class="doccomment">/// let sock = UdpSocket::from_std(std_sock)?;</span>
-    <span class="doccomment">/// // use `sock`</span>
-    <span class="doccomment">/// # Ok(())</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
+    <span class="doccomment">/// explicitly with [`Handle::enter`](crate::runtime::Handle::enter) function.</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">from_std</span>(<span class="ident">socket</span>: <span class="ident">net</span>::<span class="ident">UdpSocket</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">UdpSocket</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">io</span> <span class="op">=</span> <span class="ident">mio</span>::<span class="ident">net</span>::<span class="ident">UdpSocket</span>::<span class="ident">from_std</span>(<span class="ident">socket</span>);
-        <span class="ident">UdpSocket</span>::<span class="ident">new</span>(<span class="ident">io</span>)
+        <span class="kw">let</span> <span class="ident">io</span> <span class="op">=</span> <span class="ident">mio</span>::<span class="ident">net</span>::<span class="ident">UdpSocket</span>::<span class="ident">from_socket</span>(<span class="ident">socket</span>)<span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">io</span> <span class="op">=</span> <span class="ident">PollEvented</span>::<span class="ident">new</span>(<span class="ident">io</span>)<span class="question-mark">?</span>;
+        <span class="prelude-val">Ok</span>(<span class="ident">UdpSocket</span> { <span class="ident">io</span> })
+    }
+
+    <span class="doccomment">/// Splits the `UdpSocket` into a receive half and a send half. The two parts</span>
+    <span class="doccomment">/// can be used to receive and send datagrams concurrently, even from two</span>
+    <span class="doccomment">/// different tasks.</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">split</span>(<span class="self">self</span>) <span class="op">-&gt;</span> (<span class="ident">RecvHalf</span>, <span class="ident">SendHalf</span>) {
+        <span class="ident">split</span>(<span class="self">self</span>)
     }
 
     <span class="doccomment">/// Returns the local address that this socket is bound to.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```no_run</span>
-    <span class="doccomment">/// use tokio::net::UdpSocket;</span>
-    <span class="doccomment">/// # use std::{io, net::SocketAddr};</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # #[tokio::main]</span>
-    <span class="doccomment">/// # async fn main() -&gt; io::Result&lt;()&gt; {</span>
-    <span class="doccomment">/// let addr = &quot;0.0.0.0:8080&quot;.parse::&lt;SocketAddr&gt;().unwrap();</span>
-    <span class="doccomment">/// let sock = UdpSocket::bind(addr).await?;</span>
-    <span class="doccomment">/// // the address the socket is bound to</span>
-    <span class="doccomment">/// let local_addr = sock.local_addr()?;</span>
-    <span class="doccomment">/// # Ok(())</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">local_addr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">SocketAddr</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">get_ref</span>().<span class="ident">local_addr</span>()
     }
@@ -830,29 +513,8 @@
     <span class="doccomment">/// Connects the UDP socket setting the default destination for send() and</span>
     <span class="doccomment">/// limiting packets that are read via recv from the address specified in</span>
     <span class="doccomment">/// `addr`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```no_run</span>
-    <span class="doccomment">/// use tokio::net::UdpSocket;</span>
-    <span class="doccomment">/// # use std::{io, net::SocketAddr};</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # #[tokio::main]</span>
-    <span class="doccomment">/// # async fn main() -&gt; io::Result&lt;()&gt; {</span>
-    <span class="doccomment">/// let sock = UdpSocket::bind(&quot;0.0.0.0:8080&quot;.parse::&lt;SocketAddr&gt;().unwrap()).await?;</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// let remote_addr = &quot;127.0.0.1:59600&quot;.parse::&lt;SocketAddr&gt;().unwrap();</span>
-    <span class="doccomment">/// sock.connect(remote_addr).await?;</span>
-    <span class="doccomment">/// let mut buf = [0u8; 32];</span>
-    <span class="doccomment">/// // recv from remote_addr</span>
-    <span class="doccomment">/// let len = sock.recv(&amp;mut buf).await?;</span>
-    <span class="doccomment">/// // send to remote_addr</span>
-    <span class="doccomment">/// let _len = sock.send(&amp;buf[..len]).await?;</span>
-    <span class="doccomment">/// # Ok(())</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">connect</span><span class="op">&lt;</span><span class="ident">A</span>: <span class="ident">ToSocketAddrs</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">addr</span>: <span class="ident">A</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="ident">addrs</span> <span class="op">=</span> <span class="ident">to_socket_addrs</span>(<span class="ident">addr</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+        <span class="kw">let</span> <span class="ident">addrs</span> <span class="op">=</span> <span class="ident">addr</span>.<span class="ident">to_socket_addrs</span>().<span class="kw">await</span><span class="question-mark">?</span>;
         <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">last_err</span> <span class="op">=</span> <span class="prelude-val">None</span>;
 
         <span class="kw">for</span> <span class="ident">addr</span> <span class="kw">in</span> <span class="ident">addrs</span> {
@@ -877,24 +539,31 @@
     <span class="doccomment">/// will resolve to an error if the socket is not connected.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`connect`]: method@Self::connect</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">io</span>
-            .<span class="ident">async_io</span>(<span class="ident">mio</span>::<span class="ident">Interest</span>::<span class="ident">WRITABLE</span>, <span class="op">|</span><span class="ident">sock</span><span class="op">|</span> <span class="ident">sock</span>.<span class="ident">send</span>(<span class="ident">buf</span>))
-            .<span class="kw">await</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="ident">poll_fn</span>(<span class="op">|</span><span class="ident">cx</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">poll_send</span>(<span class="ident">cx</span>, <span class="ident">buf</span>)).<span class="kw">await</span>
     }
 
-    <span class="doccomment">/// Try to send data on the socket to the remote address to which it is</span>
-    <span class="doccomment">/// connected.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Returns</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// If successfull, the number of bytes sent is returned. Users</span>
-    <span class="doccomment">/// should ensure that when the remote cannot receive, the</span>
-    <span class="doccomment">/// [`ErrorKind::WouldBlock`] is properly handled.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// [`ErrorKind::WouldBlock`]: std::io::ErrorKind::WouldBlock</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_send</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">get_ref</span>().<span class="ident">send</span>(<span class="ident">buf</span>)
+    <span class="comment">// Poll IO functions that takes `&amp;self` are provided for the split API.</span>
+    <span class="comment">//</span>
+    <span class="comment">// They are not public because (taken from the doc of `PollEvented`):</span>
+    <span class="comment">//</span>
+    <span class="comment">// While `PollEvented` is `Sync` (if the underlying I/O type is `Sync`), the</span>
+    <span class="comment">// caller must ensure that there are at most two tasks that use a</span>
+    <span class="comment">// `PollEvented` instance concurrently. One for reading and one for writing.</span>
+    <span class="comment">// While violating this requirement is &quot;safe&quot; from a Rust memory model point</span>
+    <span class="comment">// of view, it will result in unexpected behavior in the form of lost</span>
+    <span class="comment">// notifications and tasks hanging.</span>
+    <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">poll_send</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;&gt;</span> {
+        <span class="macro">ready</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">io</span>.<span class="ident">poll_write_ready</span>(<span class="ident">cx</span>))<span class="question-mark">?</span>;
+
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">get_ref</span>().<span class="ident">send</span>(<span class="ident">buf</span>) {
+            <span class="prelude-val">Err</span>(<span class="kw-2">ref</span> <span class="ident">e</span>) <span class="kw">if</span> <span class="ident">e</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">io</span>::<span class="ident">ErrorKind</span>::<span class="ident">WouldBlock</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">clear_write_ready</span>(<span class="ident">cx</span>)<span class="question-mark">?</span>;
+                <span class="ident">Poll</span>::<span class="ident">Pending</span>
+            }
+            <span class="ident">x</span> <span class="op">=&gt;</span> <span class="ident">Poll</span>::<span class="ident">Ready</span>(<span class="ident">x</span>),
+        }
     }
 
     <span class="doccomment">/// Returns a future that receives a single datagram message on the socket from</span>
@@ -909,10 +578,21 @@
     <span class="doccomment">/// will fail if the socket is not connected.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`connect`]: method@Self::connect</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">recv</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">io</span>
-            .<span class="ident">async_io</span>(<span class="ident">mio</span>::<span class="ident">Interest</span>::<span class="ident">READABLE</span>, <span class="op">|</span><span class="ident">sock</span><span class="op">|</span> <span class="ident">sock</span>.<span class="ident">recv</span>(<span class="ident">buf</span>))
-            .<span class="kw">await</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">recv</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="ident">poll_fn</span>(<span class="op">|</span><span class="ident">cx</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">poll_recv</span>(<span class="ident">cx</span>, <span class="ident">buf</span>)).<span class="kw">await</span>
+    }
+
+    <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">poll_recv</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;&gt;</span> {
+        <span class="macro">ready</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">io</span>.<span class="ident">poll_read_ready</span>(<span class="ident">cx</span>, <span class="ident">mio</span>::<span class="ident">Ready</span>::<span class="ident">readable</span>()))<span class="question-mark">?</span>;
+
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">get_ref</span>().<span class="ident">recv</span>(<span class="ident">buf</span>) {
+            <span class="prelude-val">Err</span>(<span class="kw-2">ref</span> <span class="ident">e</span>) <span class="kw">if</span> <span class="ident">e</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">io</span>::<span class="ident">ErrorKind</span>::<span class="ident">WouldBlock</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">clear_read_ready</span>(<span class="ident">cx</span>, <span class="ident">mio</span>::<span class="ident">Ready</span>::<span class="ident">readable</span>())<span class="question-mark">?</span>;
+                <span class="ident">Poll</span>::<span class="ident">Pending</span>
+            }
+            <span class="ident">x</span> <span class="op">=&gt;</span> <span class="ident">Poll</span>::<span class="ident">Ready</span>(<span class="ident">x</span>),
+        }
     }
 
     <span class="doccomment">/// Returns a future that sends data on the socket to the given address.</span>
@@ -920,27 +600,11 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// The future will resolve to an error if the IP version of the socket does</span>
     <span class="doccomment">/// not match that of `target`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```no_run</span>
-    <span class="doccomment">/// use tokio::net::UdpSocket;</span>
-    <span class="doccomment">/// # use std::{io, net::SocketAddr};</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # #[tokio::main]</span>
-    <span class="doccomment">/// # async fn main() -&gt; io::Result&lt;()&gt; {</span>
-    <span class="doccomment">/// let sock = UdpSocket::bind(&quot;0.0.0.0:8080&quot;.parse::&lt;SocketAddr&gt;().unwrap()).await?;</span>
-    <span class="doccomment">/// let buf = b&quot;hello world&quot;;</span>
-    <span class="doccomment">/// let remote_addr = &quot;127.0.0.1:58000&quot;.parse::&lt;SocketAddr&gt;().unwrap();</span>
-    <span class="doccomment">/// let _len = sock.send_to(&amp;buf[..], remote_addr).await?;</span>
-    <span class="doccomment">/// # Ok(())</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_to</span><span class="op">&lt;</span><span class="ident">A</span>: <span class="ident">ToSocketAddrs</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">target</span>: <span class="ident">A</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">addrs</span> <span class="op">=</span> <span class="ident">to_socket_addrs</span>(<span class="ident">target</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_to</span><span class="op">&lt;</span><span class="ident">A</span>: <span class="ident">ToSocketAddrs</span><span class="op">&gt;</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">target</span>: <span class="ident">A</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
+        <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">addrs</span> <span class="op">=</span> <span class="ident">target</span>.<span class="ident">to_socket_addrs</span>().<span class="kw">await</span><span class="question-mark">?</span>;
 
         <span class="kw">match</span> <span class="ident">addrs</span>.<span class="ident">next</span>() {
-            <span class="prelude-val">Some</span>(<span class="ident">target</span>) <span class="op">=&gt;</span> <span class="self">self</span>.<span class="ident">send_to_addr</span>(<span class="ident">buf</span>, <span class="ident">target</span>).<span class="kw">await</span>,
+            <span class="prelude-val">Some</span>(<span class="ident">target</span>) <span class="op">=&gt;</span> <span class="ident">poll_fn</span>(<span class="op">|</span><span class="ident">cx</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">poll_send_to</span>(<span class="ident">cx</span>, <span class="ident">buf</span>, <span class="kw-2">&amp;</span><span class="ident">target</span>)).<span class="kw">await</span>,
             <span class="prelude-val">None</span> <span class="op">=&gt;</span> <span class="prelude-val">Err</span>(<span class="ident">io</span>::<span class="ident">Error</span>::<span class="ident">new</span>(
                 <span class="ident">io</span>::<span class="ident">ErrorKind</span>::<span class="ident">InvalidInput</span>,
                 <span class="string">&quot;no addresses to send data to&quot;</span>,
@@ -948,42 +612,23 @@
         }
     }
 
-    <span class="doccomment">/// Try to send data on the socket to the given address, but if the send is blocked</span>
-    <span class="doccomment">/// this will return right away.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Returns</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// If successfull, returns the number of bytes sent</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// Users should ensure that when the remote cannot receive, the</span>
-    <span class="doccomment">/// [`ErrorKind::WouldBlock`] is properly handled. An error can also occur</span>
-    <span class="doccomment">/// if the IP version of the socket does not match that of `target`.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```no_run</span>
-    <span class="doccomment">/// use tokio::net::UdpSocket;</span>
-    <span class="doccomment">/// # use std::{io, net::SocketAddr};</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # #[tokio::main]</span>
-    <span class="doccomment">/// # async fn main() -&gt; io::Result&lt;()&gt; {</span>
-    <span class="doccomment">/// let sock = UdpSocket::bind(&quot;0.0.0.0:8080&quot;.parse::&lt;SocketAddr&gt;().unwrap()).await?;</span>
-    <span class="doccomment">/// let buf = b&quot;hello world&quot;;</span>
-    <span class="doccomment">/// let remote_addr = &quot;127.0.0.1:58000&quot;.parse::&lt;SocketAddr&gt;().unwrap();</span>
-    <span class="doccomment">/// let _len = sock.try_send_to(&amp;buf[..], remote_addr)?;</span>
-    <span class="doccomment">/// # Ok(())</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// [`ErrorKind::WouldBlock`]: std::io::ErrorKind::WouldBlock</span>
-    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">try_send_to</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">target</span>: <span class="ident">SocketAddr</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">get_ref</span>().<span class="ident">send_to</span>(<span class="ident">buf</span>, <span class="ident">target</span>)
-    }
+    <span class="comment">// TODO: Public or not?</span>
+    <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">poll_send_to</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
+        <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>],
+        <span class="ident">target</span>: <span class="kw-2">&amp;</span><span class="ident">SocketAddr</span>,
+    ) <span class="op">-&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;&gt;</span> {
+        <span class="macro">ready</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">io</span>.<span class="ident">poll_write_ready</span>(<span class="ident">cx</span>))<span class="question-mark">?</span>;
 
-    <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">send_to_addr</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span>[<span class="ident">u8</span>], <span class="ident">target</span>: <span class="ident">SocketAddr</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">usize</span><span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">io</span>
-            .<span class="ident">async_io</span>(<span class="ident">mio</span>::<span class="ident">Interest</span>::<span class="ident">WRITABLE</span>, <span class="op">|</span><span class="ident">sock</span><span class="op">|</span> <span class="ident">sock</span>.<span class="ident">send_to</span>(<span class="ident">buf</span>, <span class="ident">target</span>))
-            .<span class="kw">await</span>
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">get_ref</span>().<span class="ident">send_to</span>(<span class="ident">buf</span>, <span class="ident">target</span>) {
+            <span class="prelude-val">Err</span>(<span class="kw-2">ref</span> <span class="ident">e</span>) <span class="kw">if</span> <span class="ident">e</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">io</span>::<span class="ident">ErrorKind</span>::<span class="ident">WouldBlock</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">clear_write_ready</span>(<span class="ident">cx</span>)<span class="question-mark">?</span>;
+                <span class="ident">Poll</span>::<span class="ident">Pending</span>
+            }
+            <span class="ident">x</span> <span class="op">=&gt;</span> <span class="ident">Poll</span>::<span class="ident">Ready</span>(<span class="ident">x</span>),
+        }
     }
 
     <span class="doccomment">/// Returns a future that receives a single datagram on the socket. On success,</span>
@@ -992,26 +637,25 @@
     <span class="doccomment">/// The function must be called with valid byte array `buf` of sufficient size</span>
     <span class="doccomment">/// to hold the message bytes. If a message is too long to fit in the supplied</span>
     <span class="doccomment">/// buffer, excess bytes may be discarded.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Example</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```no_run</span>
-    <span class="doccomment">/// use tokio::net::UdpSocket;</span>
-    <span class="doccomment">/// # use std::{io, net::SocketAddr};</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # #[tokio::main]</span>
-    <span class="doccomment">/// # async fn main() -&gt; io::Result&lt;()&gt; {</span>
-    <span class="doccomment">/// let sock = UdpSocket::bind(&quot;0.0.0.0:8080&quot;.parse::&lt;SocketAddr&gt;().unwrap()).await?;</span>
-    <span class="doccomment">/// let mut buf = [0u8; 32];</span>
-    <span class="doccomment">/// let (len, addr) = sock.recv_from(&amp;mut buf).await?;</span>
-    <span class="doccomment">/// println!(&quot;received {:?} bytes from {:?}&quot;, len, addr);</span>
-    <span class="doccomment">/// # Ok(())</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
-    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">recv_from</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">SocketAddr</span>)<span class="op">&gt;</span> {
-        <span class="self">self</span>.<span class="ident">io</span>
-            .<span class="ident">async_io</span>(<span class="ident">mio</span>::<span class="ident">Interest</span>::<span class="ident">READABLE</span>, <span class="op">|</span><span class="ident">sock</span><span class="op">|</span> <span class="ident">sock</span>.<span class="ident">recv_from</span>(<span class="ident">buf</span>))
-            .<span class="kw">await</span>
+    <span class="kw">pub</span> <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">recv_from</span>(<span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="self">self</span>, <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>]) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">SocketAddr</span>)<span class="op">&gt;</span> {
+        <span class="ident">poll_fn</span>(<span class="op">|</span><span class="ident">cx</span><span class="op">|</span> <span class="self">self</span>.<span class="ident">poll_recv_from</span>(<span class="ident">cx</span>, <span class="ident">buf</span>)).<span class="kw">await</span>
+    }
+
+    <span class="attribute">#[<span class="ident">doc</span>(<span class="ident">hidden</span>)]</span>
+    <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">poll_recv_from</span>(
+        <span class="kw-2">&amp;</span><span class="self">self</span>,
+        <span class="ident">cx</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> <span class="ident">Context</span><span class="op">&lt;</span><span class="lifetime">&#39;_</span><span class="op">&gt;</span>,
+        <span class="ident">buf</span>: <span class="kw-2">&amp;</span><span class="kw-2">mut</span> [<span class="ident">u8</span>],
+    ) <span class="op">-&gt;</span> <span class="ident">Poll</span><span class="op">&lt;</span><span class="prelude-ty">Result</span><span class="op">&lt;</span>(<span class="ident">usize</span>, <span class="ident">SocketAddr</span>), <span class="ident">io</span>::<span class="ident">Error</span><span class="op">&gt;&gt;</span> {
+        <span class="macro">ready</span><span class="macro">!</span>(<span class="self">self</span>.<span class="ident">io</span>.<span class="ident">poll_read_ready</span>(<span class="ident">cx</span>, <span class="ident">mio</span>::<span class="ident">Ready</span>::<span class="ident">readable</span>()))<span class="question-mark">?</span>;
+
+        <span class="kw">match</span> <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">get_ref</span>().<span class="ident">recv_from</span>(<span class="ident">buf</span>) {
+            <span class="prelude-val">Err</span>(<span class="kw-2">ref</span> <span class="ident">e</span>) <span class="kw">if</span> <span class="ident">e</span>.<span class="ident">kind</span>() <span class="op">==</span> <span class="ident">io</span>::<span class="ident">ErrorKind</span>::<span class="ident">WouldBlock</span> <span class="op">=&gt;</span> {
+                <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">clear_read_ready</span>(<span class="ident">cx</span>, <span class="ident">mio</span>::<span class="ident">Ready</span>::<span class="ident">readable</span>())<span class="question-mark">?</span>;
+                <span class="ident">Poll</span>::<span class="ident">Pending</span>
+            }
+            <span class="ident">x</span> <span class="op">=&gt;</span> <span class="ident">Poll</span>::<span class="ident">Ready</span>(<span class="ident">x</span>),
+        }
     }
 
     <span class="doccomment">/// Gets the value of the `SO_BROADCAST` option for this socket.</span>
@@ -1098,20 +742,6 @@
     <span class="doccomment">/// For more information about this option, see [`set_ttl`].</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// [`set_ttl`]: method@Self::set_ttl</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```no_run</span>
-    <span class="doccomment">/// use tokio::net::UdpSocket;</span>
-    <span class="doccomment">/// # use std::io;</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # async fn dox() -&gt; io::Result&lt;()&gt; {</span>
-    <span class="doccomment">/// let sock = UdpSocket::bind(&quot;127.0.0.1:8080&quot;).await?;</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// println!(&quot;{:?}&quot;, sock.ttl()?);</span>
-    <span class="doccomment">/// # Ok(())</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">ttl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="ident">u32</span><span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">get_ref</span>().<span class="ident">ttl</span>()
     }
@@ -1120,20 +750,6 @@
     <span class="doccomment">///</span>
     <span class="doccomment">/// This value sets the time-to-live field that is used in every packet sent</span>
     <span class="doccomment">/// from this socket.</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Examples</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// ```no_run</span>
-    <span class="doccomment">/// use tokio::net::UdpSocket;</span>
-    <span class="doccomment">/// # use std::io;</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # async fn dox() -&gt; io::Result&lt;()&gt; {</span>
-    <span class="doccomment">/// let sock = UdpSocket::bind(&quot;127.0.0.1:8080&quot;).await?;</span>
-    <span class="doccomment">/// sock.set_ttl(60)?;</span>
-    <span class="doccomment">///</span>
-    <span class="doccomment">/// # Ok(())</span>
-    <span class="doccomment">/// # }</span>
-    <span class="doccomment">/// ```</span>
     <span class="kw">pub</span> <span class="kw">fn</span> <span class="ident">set_ttl</span>(<span class="kw-2">&amp;</span><span class="self">self</span>, <span class="ident">ttl</span>: <span class="ident">u32</span>) <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
         <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">get_ref</span>().<span class="ident">set_ttl</span>(<span class="ident">ttl</span>)
     }
@@ -1177,14 +793,28 @@
     }
 }
 
-<span class="kw">impl</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">std</span>::<span class="ident">net</span>::<span class="ident">UdpSocket</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">UdpSocket</span> {
+<span class="kw">impl</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">UdpSocket</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">mio</span>::<span class="ident">net</span>::<span class="ident">UdpSocket</span> {
+    <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">io</span>::<span class="ident">Error</span>;
+
+    <span class="doccomment">/// Consumes value, returning the mio I/O object.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// See [`PollEvented::into_inner`] for more details about</span>
+    <span class="doccomment">/// resource deregistration that happens during the call.</span>
+    <span class="doccomment">///</span>
+    <span class="doccomment">/// [`PollEvented::into_inner`]: crate::io::PollEvented::into_inner</span>
+    <span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">value</span>: <span class="ident">UdpSocket</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="self">Self</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+        <span class="ident">value</span>.<span class="ident">io</span>.<span class="ident">into_inner</span>()
+    }
+}
+
+<span class="kw">impl</span> <span class="ident">TryFrom</span><span class="op">&lt;</span><span class="ident">net</span>::<span class="ident">UdpSocket</span><span class="op">&gt;</span> <span class="kw">for</span> <span class="ident">UdpSocket</span> {
     <span class="kw">type</span> <span class="ident">Error</span> <span class="op">=</span> <span class="ident">io</span>::<span class="ident">Error</span>;
 
     <span class="doccomment">/// Consumes stream, returning the tokio I/O object.</span>
     <span class="doccomment">///</span>
     <span class="doccomment">/// This is equivalent to</span>
     <span class="doccomment">/// [`UdpSocket::from_std(stream)`](UdpSocket::from_std).</span>
-    <span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">stream</span>: <span class="ident">std</span>::<span class="ident">net</span>::<span class="ident">UdpSocket</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="self">Self</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
+    <span class="kw">fn</span> <span class="ident">try_from</span>(<span class="ident">stream</span>: <span class="ident">net</span>::<span class="ident">UdpSocket</span>) <span class="op">-&gt;</span> <span class="prelude-ty">Result</span><span class="op">&lt;</span><span class="self">Self</span>, <span class="self">Self</span>::<span class="ident">Error</span><span class="op">&gt;</span> {
         <span class="self">Self</span>::<span class="ident">from_std</span>(<span class="ident">stream</span>)
     }
 }
@@ -1209,14 +839,16 @@
 
 <span class="attribute">#[<span class="ident">cfg</span>(<span class="ident">windows</span>)]</span>
 <span class="kw">mod</span> <span class="ident">sys</span> {
-    <span class="kw">use</span> <span class="kw">super</span>::<span class="ident">UdpSocket</span>;
-    <span class="kw">use</span> <span class="ident">std</span>::<span class="ident">os</span>::<span class="ident">windows</span>::<span class="ident">prelude</span>::<span class="kw-2">*</span>;
-
-    <span class="kw">impl</span> <span class="ident">AsRawSocket</span> <span class="kw">for</span> <span class="ident">UdpSocket</span> {
-        <span class="kw">fn</span> <span class="ident">as_raw_socket</span>(<span class="kw-2">&amp;</span><span class="self">self</span>) <span class="op">-&gt;</span> <span class="ident">RawSocket</span> {
-            <span class="self">self</span>.<span class="ident">io</span>.<span class="ident">get_ref</span>().<span class="ident">as_raw_socket</span>()
-        }
-    }
+    <span class="comment">// TODO: let&#39;s land these upstream with mio and then we can add them here.</span>
+    <span class="comment">//</span>
+    <span class="comment">// use std::os::windows::prelude::*;</span>
+    <span class="comment">// use super::UdpSocket;</span>
+    <span class="comment">//</span>
+    <span class="comment">// impl AsRawHandle for UdpSocket {</span>
+    <span class="comment">//     fn as_raw_handle(&amp;self) -&gt; RawHandle {</span>
+    <span class="comment">//         self.io.get_ref().as_raw_handle()</span>
+    <span class="comment">//     }</span>
+    <span class="comment">// }</span>
 }
 </pre></div>
 </section><section id="search" class="content hidden"></section><section class="footer"></section><script>window.rootPath = "../../../../";window.currentCrate = "tokio";</script><script src="../../../../main.js"></script><script src="../../../../source-script.js"></script><script src="../../../../source-files.js"></script><script defer src="../../../../search-index.js"></script></body></html>

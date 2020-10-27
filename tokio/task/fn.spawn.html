@@ -10,7 +10,7 @@ When a runtime is shutdown, all outstanding tasks are dropped,
 regardless of the lifecycle of that task.</p>
 <p>This function must be called from the context of a Tokio runtime. Tasks running on
 the Tokio runtime are always inside its context, but you can also enter the context
-using the <a href="crate::runtime::Runtime::enter()"><code>Runtime::enter</code></a> method.</p>
+using the <a href="crate::runtime::Handle::enter()"><code>Handle::enter</code></a> method.</p>
 <h1 id="examples" class="section-header"><a href="#examples">Examples</a></h1>
 <p>In this example, a server is started and <code>spawn</code> is used to start a new task
 that processes each received connection.</p>
@@ -26,7 +26,7 @@ that processes each received connection.</p>
 
 <span class="attribute">#[<span class="ident">tokio</span>::<span class="ident">main</span>]</span>
 <span class="kw">async</span> <span class="kw">fn</span> <span class="ident">main</span>() <span class="op">-&gt;</span> <span class="ident">io</span>::<span class="prelude-ty">Result</span><span class="op">&lt;</span>()<span class="op">&gt;</span> {
-    <span class="kw">let</span> <span class="ident">listener</span> <span class="op">=</span> <span class="ident">TcpListener</span>::<span class="ident">bind</span>(<span class="string">&quot;127.0.0.1:8080&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>;
+    <span class="kw">let</span> <span class="kw-2">mut</span> <span class="ident">listener</span> <span class="op">=</span> <span class="ident">TcpListener</span>::<span class="ident">bind</span>(<span class="string">&quot;127.0.0.1:8080&quot;</span>).<span class="kw">await</span><span class="question-mark">?</span>;
 
     <span class="kw">loop</span> {
         <span class="kw">let</span> (<span class="ident">socket</span>, <span class="kw">_</span>) <span class="op">=</span> <span class="ident">listener</span>.<span class="ident">accept</span>().<span class="kw">await</span><span class="question-mark">?</span>;
