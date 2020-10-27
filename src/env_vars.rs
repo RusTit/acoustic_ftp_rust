@@ -16,7 +16,7 @@ pub fn dotenv_proxy() {
         Err(e) => match e {
             DotEnvError::Io(io_error) => match io_error.kind() {
                 ErrorKind::NotFound => debug!("The .env file is missing. Skipping."),
-                _ => warn!("Unexpected error while processing .env file"),
+                _ => warn!("Unexpected io error while processing .env file"),
             },
             _ => warn!("Unexpected error while processing .env file"),
         },
