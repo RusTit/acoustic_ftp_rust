@@ -1,12 +1,10 @@
 use acoustic_ftp_rust::run;
 use log::info;
-use std::error::Error;
 
 #[tokio::main]
-pub async fn main() -> Result<(), Box<dyn Error>> {
+async fn main() {
     env_logger::init();
     info!("App is started");
-    run().await?;
+    run().await.unwrap();
     info!("App is finished");
-    Ok(())
 }
