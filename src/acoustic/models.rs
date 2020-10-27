@@ -21,7 +21,7 @@ impl AccessToken {
     pub fn is_outdated(&self) -> bool {
         if let Some(expire_at) = self.expire_at {
             let now = SystemTime::now();
-            return now > expire_at
+            return now > expire_at;
         }
         true
     }
