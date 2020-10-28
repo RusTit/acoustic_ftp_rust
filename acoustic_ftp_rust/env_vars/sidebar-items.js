@@ -1,0 +1,1 @@
+initSidebarItems({"fn":[["dotenv_proxy",""],["get_vars",""]],"struct":[["AppVars",""]]});
