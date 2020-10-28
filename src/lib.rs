@@ -1,5 +1,5 @@
-mod acoustic;
-mod env_vars;
+pub mod acoustic;
+pub mod env_vars;
 use acoustic::models::{
     ExportFormatLiteral, ExportListType, ExportTypeLiteral, GetExportFromDatabaseModel,
 };
