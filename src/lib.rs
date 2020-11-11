@@ -11,21 +11,10 @@ pub async fn run() -> Result<(), Box<dyn Error>> {
     let settings = env_vars::get_vars();
     let provider = AcousticProvider::new(&settings);
     let token = provider.get_access_key().await?;
-    let export_option = ExportListType {
-        list_id: 20718361,
-        export_type: ExportTypeLiteral::All,
-        export_format: ExportFormatLiteral::Csv,
-        email: None,
-        file_encoding: None,
-        add_to_stored_files: None,
-        date_start: None,
-        date_end: None,
-        use_created_date: None,
-        include_lead_source: None,
-        list_date_format: None,
-        include_recipient_id: None,
-        export_columns: None,
-    };
+    let mut export_option: ExportListType = Default::default();
+    export_option.list_id = 20718361;
+    export_option.export_type = ExportTypeLiteral::All;
+    export_option.export_format = ExportFormatLiteral::Csv;
     let export_model = GetExportFromDatabaseModel {
         export_list: vec![export_option],
     };
